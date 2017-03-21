@@ -70,7 +70,7 @@ int main(void)
   curl_handle = curl_easy_init();
 
   /* specify URL to get */
-  curl_easy_setopt(curl_handle, CURLOPT_URL, "http://www.nd.edu/");
+  curl_easy_setopt(curl_handle, CURLOPT_URL, "http://www.cnn.com/");
 
   /* send all data to this function  */
   curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
@@ -97,7 +97,22 @@ int main(void)
      * Do something nice with it!
      */
 
-    printf("%lu was retrieved\n", (long)chunk.memory);
+    printf("%s was retrieved\n", (long)chunk.memory);
+
+    FILE *fp;
+    char filename[100] = "testString.txt";
+
+    // Open file in write mode
+    fp = fopen(filename,"w+");
+
+    // If file opened successfully, then write the string to file
+    if ( fp ) {
+      fputs(chunk.memory,fp);
+    } else {
+      printf("Failed to open the file\n");
+    }
+    //Close the file
+    fclose(fp);
   }
 
   /* cleanup curl stuff */
