@@ -2,9 +2,16 @@
 #include "parser.h"
 #include "getinmemory.h"
 #include <iostream>
+#include <string>
+#include <chrono>
+#include <ctime>
 
 int main(int argc, char *argv[]){
+    std::string site, got;
+    int num_occ;
+    char* s;
     Config set("testconfig");
+    /*
     std::cout << "period=" << set.PERIOD_FETCH << "  fetch=" << set.NUM_FETCH << "  parse=" << set.NUM_PARSE << "  search=" << set.SEARCH_FILE << "  sites=" << set.SITE_FILE << std::endl;
     for(int i = 0; i < set.searches.size(); i++){
         std::cout << set.searches[i];
@@ -14,8 +21,31 @@ int main(int argc, char *argv[]){
         std::cout << set.sites[i];
     }
     std::cout << std::endl;
+    */
+     std::chrono::time_point<std::chrono::system_clock> start;
+     start = std::chrono::system_clock::now();
+    std::time_t start_time = std::chrono::system_clock::to_time_t(start);
+    std::string time_now = std::ctime(&start_time);
+    time_now.pop_back();
+    std::cout << time_now << std::endl;
+/*
+    for(int i = 0; i < set.sites.size(); i++){
+        site = set.sites[i];
+        s = &site[0];
+        got(curl(s));
 
-    curl();
+        for(int j = 0; j < set.searches.size(); j++){
+            num_occ = occurrences(got, set.searches[j]);
+        }
+    }
 
-    //occurences(get_file_contents("testString.txt"));
+    std::string site = "http://www.cnn.com/";
+    char* s = &site[0];
+    std::string got(curl(s));
+
+    std::cout << got << std::endl;
+
+    int num = occurrences(got, "cnn");
+    std::cout << num << std::endl;
+    */
 }

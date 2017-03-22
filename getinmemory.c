@@ -55,7 +55,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
   return realsize;
 }
 
-void curl(void)
+char* curl(char site[])
 {
   CURL *curl_handle;
   CURLcode res;
@@ -71,7 +71,7 @@ void curl(void)
   curl_handle = curl_easy_init();
 
   /* specify URL to get */
-  curl_easy_setopt(curl_handle, CURLOPT_URL, "http://www.cnn.com/");
+  curl_easy_setopt(curl_handle, CURLOPT_URL, site);
 
   /* send all data to this function  */
   curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
@@ -98,29 +98,14 @@ void curl(void)
      * Do something nice with it!
      */
 
-    printf("%s was retrieved\n", (long)chunk.memory);
-
-    FILE *fp;
-    char filename[100] = "testString.txt";
-
-    // Open file in write mode
-    fp = fopen(filename,"w+");
-
-    // If file opened successfully, then write the string to file
-    if ( fp ) {
-      fputs(chunk.memory,fp);
-    } else {
-      printf("Failed to open the file\n");
-    }
-    //Close the file
-    fclose(fp);
+    //printf("%s was retrieved\n", (long)chunk.memory);
   }
 
   /* cleanup curl stuff */
   curl_easy_cleanup(curl_handle);
 
-  free(chunk.memory);
-
   /* we're done with libcurl, so clean it up */
   curl_global_cleanup();
+
+  return(chunk.memory);
 }
