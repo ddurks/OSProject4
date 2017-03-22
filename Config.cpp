@@ -14,6 +14,7 @@ Config::Config(std::string filename){
     SITE_FILE = "Sites.txt";
     infile.open(filename.c_str());
     read();
+    SiteSearch();
 }
 
 void Config::read(){
@@ -40,7 +41,14 @@ void Config::read(){
     }
 }
 
-int main(int argc, char *argv[]){
-    Config set("testconfig");
-    std::cout << "period=" << set.PERIOD_FETCH << "  fetch=" << set.NUM_FETCH << "  parse=" << set.NUM_PARSE << "  search=" << set.SEARCH_FILE << "  sites=" << set.SITE_FILE << std::endl;
+void Config::SiteSearch(){
+    sitefile.open(SITE_FILE);
+    std::string line;
+    while(getline(sitefile, line)){
+        sites.push_back(line);
+    }
+    searchfile.open(SEARCH_FILE);
+    while(getline(searchfile, line)){
+        searches.push_back(line);
+    }
 }

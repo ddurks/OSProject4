@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
+#include "getinmemory.h"
 
 struct MemoryStruct {
   char *memory;
@@ -40,7 +41,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
   size_t realsize = size * nmemb;
   struct MemoryStruct *mem = (struct MemoryStruct *)userp;
 
-  mem->memory = realloc(mem->memory, mem->size + realsize + 1);
+  mem->memory = (char*)realloc(mem->memory, mem->size + realsize + 1);
   if(mem->memory == NULL) {
     /* out of memory! */
     printf("not enough memory (realloc returned NULL)\n");
@@ -54,14 +55,14 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
   return realsize;
 }
 
-int main(void)
+void curl(void)
 {
   CURL *curl_handle;
   CURLcode res;
 
   struct MemoryStruct chunk;
 
-  chunk.memory = malloc(1);  /* will be grown as needed by the realloc above */
+  chunk.memory = (char*)malloc(1);  /* will be grown as needed by the realloc above */
   chunk.size = 0;    /* no data at this point */
 
   curl_global_init(CURL_GLOBAL_ALL);
@@ -122,6 +123,4 @@ int main(void)
 
   /* we're done with libcurl, so clean it up */
   curl_global_cleanup();
-
-  return 0;
 }
