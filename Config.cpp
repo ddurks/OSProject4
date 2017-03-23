@@ -22,7 +22,7 @@ void Config::read(){
     while(getline(infile, line)){
         var = line.substr(0, line.find(delimiter));
         val = line.substr(line.find(delimiter)+1);
-        std::cout << var << "~" << val << std::endl;
+        //std::cout << var << "~" << val << std::endl;
         if(var == "PERIOD_FETCH"){
             PERIOD_FETCH = std::stod(val);
         }
