@@ -1,5 +1,5 @@
 all: Config.o getinmemory.o parser.o main.o
-	g++ -std=gnu++11 -lcurl -o tester parser.o Config.o main.o getinmemory.o
+	g++ -std=gnu++11 -lcurl -lpthread -o tester parser.o Config.o main.o getinmemory.o 
 
 main.o: main.cpp getinmemory.o
 	g++ -std=gnu++11 -c main.cpp

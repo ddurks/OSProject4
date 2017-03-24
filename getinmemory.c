@@ -65,8 +65,6 @@ char* curl(char site[])
   chunk.memory = (char*)malloc(1);  /* will be grown as needed by the realloc above */
   chunk.size = 0;    /* no data at this point */
 
-  curl_global_init(CURL_GLOBAL_ALL);
-
   /* init the curl session */
   curl_handle = curl_easy_init();
 

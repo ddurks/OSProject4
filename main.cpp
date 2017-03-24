@@ -5,6 +5,50 @@
 #include <string>
 #include <chrono>
 #include <ctime>
+#include <signal.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <assert.h>
+#include "WorkQueue.h"
+
+Config set("testconfig");
+int timer = 1;
+
+struct siteItem {
+    pthread_t id;
+    std::string site;
+};
+
+struct parseItem {
+    pthread_t id;
+    std::string site;
+    std::string data;
+};
+
+WorkQueue<siteItem> siteQueue;
+WorkQueue<parseItem> parseQueue;
+
+void fetchSiteNames(int s){
+    for(int i = 0; i < set.sites.size(); i++){
+        siteItem temp;
+        temp.site = set.sites[i];
+        siteQueue.add(temp);
+    }
+    alarm(1);
+}
+
+void* callCurl(void *in){
+    struct siteItem *newItem;
+    newItem = (struct siteItem *) in;
+    char *s = &newItem->site[0];
+    std::string data = curl(s);
+    parseItem temp;
+    temp.site = newItem->site;
+    temp.data = data;
+    parseQueue.add(temp);
+
+    return NULL;
+}
 
 std::string get_time_now(){
     std::chrono::time_point<std::chrono::system_clock> start;
@@ -15,26 +59,37 @@ std::string get_time_now(){
     return time_now;
 }
 
+
 int main(int argc, char *argv[]){
+    curl_global_init(CURL_GLOBAL_ALL);
     std::string site;
-    int num_occ;
+    int num_occ, rc;
     char* s;
-    Config set("testconfig");
-    /*
-    std::cout << "period=" << set.PERIOD_FETCH << "  fetch=" << set.NUM_FETCH << "  parse=" << set.NUM_PARSE << "  search=" << set.SEARCH_FILE << "  sites=" << set.SITE_FILE << std::endl;
-    for(int i = 0; i < set.searches.size(); i++){
-        std::cout << set.searches[i];
+    pthread_t fetchthreads[set.NUM_FETCH];
+    struct siteItem sIs[set.NUM_FETCH];
+
+    signal(SIGALRM, fetchSiteNames);
+    alarm(timer);
+
+    for(int i = 0; i < set.NUM_FETCH; i++){
+        sIs[i].id = i;
+        siteItem temp = siteQueue.remove();
+        sIs[i].site = temp.site;
+        std::cout << "thread creation" << std::endl;
+        rc = pthread_create(&fetchthreads[i], NULL, callCurl, (void*)&sIs[i]); assert (rc == 0);
+        std::cout << "thread created:" << i << std::endl;
     }
-    std::cout << std::endl;
+
+    for (int i = 0; i < set.NUM_FETCH; i++) {
+        rc = pthread_join(fetchthreads[i], NULL); assert(rc == 0);
+    }
+
     for(int i = 0; i < set.sites.size(); i++){
-        std::cout << set.sites[i];
+        parseItem temp = parseQueue.remove();
+        std::cout << temp.site << "\n-----------\n";
     }
-    std::cout << std::endl;
-    */
 
-    //std::cout << get_time_now() << std::endl;
-
-
+/*
     for(int i = 0; i < set.sites.size(); i++){
         site = set.sites[i];
         s = &site[0];
@@ -46,14 +101,5 @@ int main(int argc, char *argv[]){
             std::cout << get_time_now() << "," << set.searches[j] << "," << set.sites[i] << "," << num_occ << std::endl;
         }
     }
-
-/*
-    site = "http://www.cnn.com/";
-    s = &site[0];
-    std::string got(curl(s));
-
-    int num = occurrences(got, "sports");
-    std::cout << num << std::endl;
-    */
-
+*/
 }
