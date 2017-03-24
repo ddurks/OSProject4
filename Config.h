@@ -13,7 +13,8 @@ public:
     double PERIOD_FETCH;
     int NUM_FETCH, NUM_PARSE;
     std::string SEARCH_FILE, SITE_FILE;
-    Config(std::string filename);
+    Config();
+    void readConfig(std::string filename);
     void read(void);
     void SiteSearch(void);
 private:

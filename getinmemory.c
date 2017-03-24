@@ -25,6 +25,8 @@
  * </DESC>
  */
 
+ //Modified for project4 by David Durkin and Chris Beaufils
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -86,7 +88,13 @@ char* curl(char site[])
 
   /* check for errors */
   if(res != CURLE_OK) {
-    fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+    fprintf(stderr, "curl_easy_perform() failed on site %s: %s\n", site, curl_easy_strerror(res));
+    /* cleanup curl stuff */
+    curl_easy_cleanup(curl_handle);
+
+    /* we're done with libcurl, so clean it up */
+    curl_global_cleanup();
+    return("");
   }
   else {
     /*
